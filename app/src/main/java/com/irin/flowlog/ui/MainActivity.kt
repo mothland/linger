@@ -137,7 +137,7 @@ fun StatusScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.Start,
     ) {
-        Text("flowlog", style = MaterialTheme.typography.headlineLarge)
+        Text("Linger", style = MaterialTheme.typography.headlineLarge)
 
         // ── Service status card ───────────────────────────────────────────────
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -187,7 +187,7 @@ fun StatusScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        "Battery optimization is on. The OS may stop FlowLog during extended recording.",
+                        "Battery optimization is on. The OS may stop Linger during extended recording.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onErrorContainer,
                     )

@@ -1,7 +1,7 @@
 # Data Collection Audit — flowlog v1.0.0
 
 **Study:** Behavioral telemetry and flow state in social media use  
-**Researcher:** Irin, MSc thesis, ESILV Paris  
+**Researcher:** MSc thesis, ESILV Paris  
 **Instrument:** flowlog Android app (`com.irin.flowlog`)  
 **Last updated:** 2026-05-21
 
@@ -270,7 +270,7 @@ Each session is divided into **ESM epochs** — slices of behavioral events brac
 
 ## 9. Suggested participant information sheet (template)
 
-> **Study title:** [Your thesis title]
+> **Study title:** "If You're Hooked And You Know It, Double Press" : Exploring Non-Invasive Inference of Reward Satiation Through Wanting–Liking Dissociation During Infinite Scroll Engagement
 >
 > **What the app records while you use Instagram:**
 > - How often and in which direction you scroll

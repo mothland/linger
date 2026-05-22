@@ -1,7 +1,6 @@
-# Agent Onboarding — flowlog
+# Onboarding — flowlog / Linger
 
-**Current version: 1.0.2** (see CHANGELOG.md)
-**Owner:** Irin — MSc thesis, ESILV Paris
+**Current version: 1.0.2** (see CHANGELOG.md)  
 **Purpose:** Passive behavioral telemetry logger for Instagram. Records interaction events + post-session self-reports to study flow state and Reward Prediction Error. Observes only — never nudges or modifies the user experience.
 
 > **Name note:** The app is called **Linger** on-device (home screen, Accessibility settings). The internal codename is **flowlog**, used throughout the codebase — package ID (`com.irin.flowlog`), class names, logcat tags, and these docs. Don't rename the code; just be aware the two names refer to the same thing.
@@ -10,9 +9,9 @@
 
 ## How to work on this project
 
-- Bump `versionName` (and `versionCode`) in `app/build.gradle.kts` and add an entry to `CHANGELOG.md` at the end of every edit session.
-- All writes to the DB go through `PrivacyLayer` — never bypass it.
-- Irin has no prior Android/Kotlin experience. Keep explanations in comments where behaviour is non-obvious. Prefer boring, auditable choices.
+- Update the docs accordingly for each PR.
+- All writes to the DB go through `PrivacyLayer`:  never bypass it.
+- Prefer boring, auditable choices. Keep explanations in comments where behaviour is non-obvious.
 - Privacy constraints are hard. See the section below before adding any new fields.
 
 ---
@@ -38,7 +37,7 @@ app/src/main/java/com/irin/flowlog/
 ├── export/
 │   └── JsonExporter.kt                 ← produces the export JSON file
 ├── ui/
-│   └── MainActivity.kt                 ← settings screen, export button, kill switch
+│   └── MainActivity.kt                 ← status screen, export button, kill switch
 └── dev/
     ├── DevConfig.kt                    ← single boolean to force dev mode on/off
     ├── TestAction.kt                   ← sealed class of available test actions
@@ -47,7 +46,7 @@ app/src/main/java/com/irin/flowlog/
 
 ---
 
-## Event types (EventType.kt)
+## Current Event types (EventType.kt)
 
 | Type | When | Key payload |
 |---|---|---|
@@ -127,10 +126,12 @@ The `PrivacyLayer` is the enforcer. If you add a new event type, add its allowed
 | `FlowLog_Scroll` | viewId, fromIndex, direction, context, delta on every scroll | dev mode only |
 | `FlowLog_Test` | Dev test runner START/PASS/FAIL | dev mode only |
 
+---
+
 ## Things to know / gotchas
 
 - `TYPE_WINDOW_CONTENT_CHANGED` fires on every video frame in Reels — any handler must debounce aggressively. SeekBar events (className `android.widget.SeekBar`) are filtered before the debounce to prevent the scrubber from resetting it constantly.
-- `post_view_id` tracks which post is currently centered on screen. Feed: `trackFeedItem()` uses `event.source` (the feed RecyclerView node) to walk its children (~4-6), finds the child whose center Y is closest to screen center, and generates a new UUID when that child's `hashCode()` changes. Same View object = same post regardless of wiggles. Carousel swipes happen on a nested ViewPager2, so the outer feed child is unchanged → same hash → same ID. Reels: new UUID on `clips_viewer_view_pager` `fromIndex` change. Initial UUID seeded on foreground entry so immediate likes/saves before the first scroll are never null. `PAUSE` inherits the current ID — it does not generate a new one.
+- `post_view_id` seems to track which post is currently centered on screen. Feed: `trackFeedItem()` uses `event.source` (the feed RecyclerView node) to walk its children (~4-6), finds the child whose center Y is closest to screen center, and generates a new UUID when that child's `hashCode()` changes. Same View object = same post regardless of wiggles. Carousel swipes happen on a nested ViewPager2, so the outer feed child is unchanged → same hash → same ID. Reels: new UUID on `clips_viewer_view_pager` `fromIndex` change. Initial UUID seeded on foreground entry so immediate likes/saves before the first scroll are never null. `PAUSE` inherits the current ID — it does not generate a new one.
 - `screenContext` is inferred from `viewIdResourceName` first (Instagram-specific IDs are stable and unambiguous), falling back to class name and event text. The mapping lives in `inferContextFromViewId()` (top-level `internal` function, testable without Android). Horizontal scrolls with `"unknown"` context are overridden to `"carousel"`. If a context starts returning `"unknown"`, check `FlowLog_Scroll` or `FlowLog_Tap` to find the new view ID and add it to the mapping. **Order matters**: `"direct_tab"` and `"inbox"` map to `"dm"` and must appear before the general `"direct_"` → `"share"` rule, since those view IDs also start with `direct_`. Only add further DM rules when confirmed from `FlowLog_Tap` output — generic substrings like `"thread"` risk matching share-sheet recipient rows.
 - `APP_SWITCH` is suppressed when any window of type `TYPE_INPUT_METHOD`, `TYPE_SYSTEM`, or `TYPE_ACCESSIBILITY_OVERLAY` is visible — keyboards, nav bar adjustments, and accessibility overlays are not genuine app switches.
 - Feed post dwell: query all events sharing the same `post_view_id` with `screenContext = "feed"`. Dwell = `MAX(timestamp_mono) - MIN(timestamp_mono)`. The ID is set by which post View is centered on screen — `PAUSE` events contribute to the dwell span but do not start a new ID.

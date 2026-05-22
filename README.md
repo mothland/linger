@@ -2,16 +2,16 @@
 
 Android behavioral telemetry logger for MSc thesis research on flow states and social media engagement (ESILV Paris).
 
-**Version:** 1.0.0
 **Target:** Instagram on Android 8.1+
 
 ---
 
 ## What it does
 
-flowlog runs silently in the background and records behavioral events (taps, scrolls, pauses, session timing, likes/saves/reposts/shares, Reel dwell) while you use Instagram. Every 5 minutes during an active Instagram session it sends two short ESM ping notifications asking how the scrolling felt. All data stays on your device; you export it manually as a JSON file.
+flowlog runs silently in the background and **locally** records **anonymous** behavioral events (taps, scrolls, pauses, session timing, likes/saves/reposts/shares, Reel dwell) while you use Instagram. Every 5 minutes during an active Instagram session it sends two short ESM ping notifications asking how the scrolling felt. All data stays on your device; you export it manually as a JSON file.
 
 **What it records:** tap/scroll/pause/post-interaction events inside Instagram, session start/end times, Reel dwell time, screen on/off events when adjacent to a session, notification interrupt signals during sessions (no content, no sender identity).
+
 **What it never records:** any text, captions, usernames, notification titles/bodies, images, audio, or location.
 
 ---

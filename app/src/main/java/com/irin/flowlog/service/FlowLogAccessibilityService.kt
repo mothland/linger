@@ -37,14 +37,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import java.time.LocalDate
-import java.time.ZoneOffset
 import java.util.UUID
 
 private const val TAG        = "FlowLog"
@@ -127,7 +123,7 @@ class FlowLogAccessibilityService : AccessibilityService() {
         trigger.start(scope)
 
         // ── Foreground notification ───────────────────────────────────────────
-        val initialNotif = buildForegroundNotification("Starting…")
+        val initialNotif = buildForegroundNotification()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(FlowLogApplication.NOTIF_FOREGROUND, initialNotif, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
@@ -169,7 +165,6 @@ class FlowLogAccessibilityService : AccessibilityService() {
 
         // ── Background coroutines ─────────────────────────────────────────────
         scope.launch { runHeartbeat() }
-        scope.launch { runNotificationUpdates() }
         if (DevConfig.enabled) scope.launch { collectTestActions() }
     }
 
@@ -785,28 +780,12 @@ class FlowLogAccessibilityService : AccessibilityService() {
         }
     }
 
-    private suspend fun runNotificationUpdates() {
-        val nm       = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val todayStr = todayStartUtc()
-        combine(
-            ServiceStats.lastEventAtMs,
-            db.sessionDao().observeTodaySessionCount(todayStr),
-            tickerFlow(30_000L),
-        ) { lastMs, sessionsToday, _ ->
-            val elapsed = elapsedText(lastMs)
-            "Last event: $elapsed • $sessionsToday session${if (sessionsToday == 1) "" else "s"} today"
-        }.collect { statusText ->
-            nm.notify(FlowLogApplication.NOTIF_FOREGROUND, buildForegroundNotification(statusText))
-        }
-    }
-
     // ── Notification builder ──────────────────────────────────────────────────
 
-    private fun buildForegroundNotification(statusText: String): Notification {
+    private fun buildForegroundNotification(): Notification {
         return NotificationCompat.Builder(this, FlowLogApplication.CHANNEL_SERVICE_STATUS)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("FlowLog is recording")
-            .setContentText(statusText)
+            .setContentTitle("Linger")
             .setOngoing(true)
             .setSilent(true)
             .setOnlyAlertOnce(true)
@@ -839,24 +818,6 @@ internal fun inferContextFromViewId(viewId: String?): String? {
 
 // ── Private helpers ───────────────────────────────────────────────────────────
 
-private fun todayStartUtc(): String {
-    val today = LocalDate.now(ZoneOffset.UTC)
-    return "${today}T00:00:00Z"
-}
-
-private fun elapsedText(lastEventMs: Long): String {
-    if (lastEventMs == 0L) return "no events yet"
-    val secs = (System.currentTimeMillis() - lastEventMs) / 1_000
-    return when {
-        secs < 60   -> "${secs}s ago"
-        secs < 3600 -> "${secs / 60}m ago"
-        else        -> "${secs / 3600}h ago"
-    }
-}
-
-private fun tickerFlow(periodMs: Long) = flow {
-    while (true) { emit(Unit); delay(periodMs) }
-}
 
 /**
  * Serialises all scalar AccessibilityEvent fields plus node info from event.source.

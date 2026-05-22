@@ -18,3 +18,7 @@ local.properties
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Personal Agent Files
+DECISIONS.md
+AGENTS.md

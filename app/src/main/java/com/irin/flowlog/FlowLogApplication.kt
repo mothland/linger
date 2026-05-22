@@ -31,8 +31,8 @@ class FlowLogApplication : Application() {
         // Foreground service status — persistent, silent. IMPORTANCE_LOW suppresses sound/badge.
         if (nm.getNotificationChannel(CHANNEL_SERVICE_STATUS) == null) {
             nm.createNotificationChannel(
-                NotificationChannel(CHANNEL_SERVICE_STATUS, "Recording status", NotificationManager.IMPORTANCE_LOW)
-                    .apply { description = "Persistent notification shown while FlowLog is actively recording." }
+                NotificationChannel(CHANNEL_SERVICE_STATUS, "Recording status", NotificationManager.IMPORTANCE_MIN)
+                    .apply { description = "Persistent notification shown while Linger is actively recording." }
             )
         }
     }
@@ -57,7 +57,7 @@ class FlowLogApplication : Application() {
             val nm = getSystemService(NotificationManager::class.java)
             val notif = NotificationCompat.Builder(this, CHANNEL_SERVICE_STATUS)
                 .setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle("FlowLog was stopped unexpectedly")
+                .setContentTitle("Linger was stopped unexpectedly")
                 .setContentText("Your data up to $timeStr was saved.")
                 .setAutoCancel(true)
                 .build()
