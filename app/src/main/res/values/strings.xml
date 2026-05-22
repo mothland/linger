@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Linger</string>
+
+    <!--
+        Shown to the user in Settings → Accessibility when they consider enabling this service.
+        Must be accurate — see spec §6. Keep it plain and honest.
+    -->
+    <string name="accessibility_service_description">
+        Linger records tap, scroll, pause, and timing events inside Instagram to support
+        academic research on attention and engagement. It does not read any text content,
+        capture images, record audio, or access the content of notifications. All data stays
+        on your device until you manually export it from the app.
+    </string>
+</resources>

@@ -1,0 +1,20 @@
+# Gradle cache and build outputs
+.gradle/
+build/
+app/build/
+.claude
+# Android Studio / IntelliJ project files
+.idea/
+*.iml
+*.hprof
+
+# Local machine config — contains your SDK path, never commit this
+local.properties
+
+# Signing keys — never commit these
+*.jks
+*.keystore
+
+# OS noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Android-ism: permissions here are "requested" — the user still has to grant them.
+        Some (BIND_ACCESSIBILITY_SERVICE, BIND_NOTIFICATION_LISTENER_SERVICE) require
+        the user to explicitly flip a toggle in system Settings; you cannot prompt for them
+        in-app with the normal permission dialog.
+
+        INTENTIONALLY ABSENT: android.permission.INTERNET
+        No network code exists in MVP. If a future version adds sync, this must be a deliberate
+        manifest change — see spec §4.2.
+    -->
+
+    <!-- Needed to declare the AccessibilityService component. -->
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+
+    <!-- Needed to receive notification events from all apps (package name only — no content). -->
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+
+    <!-- Write to app-scoped external storage (Documents/) for JSON export.
+         On Android 10+ (API 29+) this permission is not needed for app-scoped directories,
+         but maxSdkVersion="28" covers the remaining devices. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- Required for the foreground service that keeps the logger alive. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Android 14+ (API 34) requires a typed foreground service permission matching the declared type. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!-- Allows prompting the user to exempt FlowLog from battery optimization. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Android 13+ requires explicit permission to post notifications (e.g. the post-session prompt). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".FlowLogApplication"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.FlowLog"
+        android:allowBackup="false">
+
+        <!-- Main screen: logging status, export, delete. -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            AccessibilityService declaration.
+            android:permission ensures only Android's accessibility framework can bind to it
+            (not other apps). android:exported="true" is required for the system to find it.
+            The meta-data points to our XML config file shown in Settings → Accessibility.
+        -->
+        <service
+            android:name=".service.FlowLogAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:foregroundServiceType="dataSync"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!--
+            Handles taps on the ESM notification action buttons ("Pretty good", "Eh", "It sucked")
+            and swipe-dismisses. Not exported — only our own PendingIntents can send this broadcast.
+        -->
+        <receiver
+            android:name=".report.EsmResponseReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.irin.flowlog.ACTION_ESM_RESPONSE" />
+                <action android:name="com.irin.flowlog.ACTION_ESM_UNDO" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+            FileProvider: lets us share the JSON export file with other apps via a content:// URI.
+            Direct file:// URIs are blocked on Android 7+ for security reasons — this is the
+            required alternative. See JsonExporter.shareIntent().
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
+    </application>
+</manifest>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Configures what Android's accessibility framework delivers to FlowLogAccessibilityService.
+
+    accessibilityEventTypes: which event categories we receive.
+      - typeWindowStateChanged: foreground app changed (used for session start/end detection)
+      - typeWindowContentChanged: content updated within the current window (future: media dwell)
+      - typeViewScrolled: user scrolled
+      - typeViewClicked: user tapped
+      - typeNotificationStateChanged: a notification appeared (we log the package name only)
+
+    packageNames: intentionally absent — we want notification events from ALL packages.
+      Instagram-only filtering for scroll/tap/etc. is done in code (see FlowLogAccessibilityService).
+
+    description: shown to the user in Settings → Accessibility → flowlog.
+      Must honestly describe what the service does — see spec §6.
+
+    canRetrieveWindowContent: true — needed to read class names from the view hierarchy
+      so we can infer the screen context (feed/reels/etc.). We never read text content.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeViewScrolled|typeViewClicked|typeNotificationStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows|flagIncludeNotImportantViews"
+    android:notificationTimeout="100"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="true" />

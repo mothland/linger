@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Tells FileProvider which directories it may expose as content:// URIs.
+    external-files-path maps to Context.getExternalFilesDir(), which is where JsonExporter writes.
+-->
+<paths>
+    <external-files-path name="exports" path="Documents/" />
+</paths>
