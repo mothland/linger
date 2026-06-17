@@ -114,10 +114,16 @@ class FlowLogAccessibilityService : AccessibilityService() {
         db             = AppDatabase.getInstance(applicationContext)
         val privacy    = PrivacyLayer(db)
         trigger        = EsmTrigger(applicationContext, db)
-        sessionManager = SessionManager(db, privacy, scope) {
-            ServiceStats.activeSessionId.value = null
-            trigger.onSessionEnded()
-        }
+        sessionManager = SessionManager(
+            db                 = db,
+            privacyLayer       = privacy,
+            scope              = scope,
+            onSessionStarted   = { trigger.onSessionStarted() },
+            onSessionFinalized = {
+                ServiceStats.activeSessionId.value = null
+                trigger.onSessionEnded()
+            },
+        )
         dispatcher     = EventDispatcher(privacy, sessionManager, scope)
         trigger.sessionManager = sessionManager
         trigger.start(scope)

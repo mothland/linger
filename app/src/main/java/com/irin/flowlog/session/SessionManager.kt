@@ -39,6 +39,7 @@ class SessionManager(
     private val db: AppDatabase,
     private val privacyLayer: PrivacyLayer,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    private val onSessionStarted: (() -> Unit)? = null,
     private val onSessionFinalized: (() -> Unit)? = null,
 ) {
     // UUID of the in-progress session, or null when idle.
@@ -67,6 +68,7 @@ class SessionManager(
         val sessionId = UUID.randomUUID().toString()
         activeSessionId = sessionId
         sessionStartInstant = Instant.now()
+        onSessionStarted?.invoke()
         Log.i(TAG, "Session started: $sessionId")
 
         scope.launch {

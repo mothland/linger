@@ -1,7 +1,6 @@
 # Data Collection Audit — flowlog v1.0.0
 
-**Study:** Behavioral telemetry and flow state in social media use  
-**Researcher:** MSc thesis, ESILV Paris  
+**Study:** Behavioral telemetry and flow state in social media use   
 **Instrument:** flowlog Android app (`com.irin.flowlog`)  
 **Last updated:** 2026-05-21
 

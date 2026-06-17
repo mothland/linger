@@ -61,20 +61,21 @@ class EsmTrigger(
         scheduleTimer()
     }
 
-    fun onSessionEnded() {
-        timerJob?.cancel()
-        scheduleTimer()
-    }
+    fun onSessionStarted() = scheduleTimer()
+
+    fun onSessionEnded() = scheduleTimer()
 
     suspend fun fireForTesting() = fireNotifications()
 
     private fun scheduleTimer() {
+        timerJob?.cancel()
         timerJob = scope.launch {
-            delay(ESM_INTERVAL_MS)
-            if (sessionManager?.activeSessionId != null) {
-                fireNotifications()
+            while (isActive) {
+                delay(ESM_INTERVAL_MS)
+                if (sessionManager?.activeSessionId != null) {
+                    fireNotifications()
+                }
             }
-            scheduleTimer()
         }
     }
 

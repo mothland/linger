@@ -13,8 +13,8 @@ android {
         applicationId   = "com.irin.flowlog"
         minSdk          = 28     // Android 8.1 — getScrollDeltaX/Y require API 28
         targetSdk       = 35
-        versionCode     = 13
-        versionName     = "1.0.2"
+        versionCode     = 14
+        versionName     = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

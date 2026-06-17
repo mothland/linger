@@ -4,6 +4,13 @@ All code changes are logged here. Bump `versionName` in `app/build.gradle.kts` w
 
 ---
 
+## [1.0.3] — 2026-05-25
+
+### Fixed
+- ESM ping could fire in less than 5 minutes after returning to Instagram. The timer ran continuously and only skipped the notification when no session was active — it never reset when a new session started. If the timer fired while the user was away (no notification sent, timer rescheduled), reconnecting partway through that new interval produced a ping after only the remaining time. Fixed by adding `onSessionStarted()` to `EsmTrigger` and calling it from `SessionManager` when a genuinely new session opens (the quick-return path within the 30 s grace window is unchanged — the timer keeps counting). The recursive `scheduleTimer()` pattern was also replaced with a `while (isActive)` loop, eliminating a race condition where two concurrent timer jobs could run simultaneously if `onSessionEnded()` fired while the previous timer was between its `delay` and recursive reschedule.
+
+---
+
 ## [1.0.2] — 2026-05-21
 
 ### Fixed
