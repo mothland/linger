@@ -1,4 +1,4 @@
-package com.irin.flowlog.export
+package com.linger.app.export
 
 import android.content.Context
 import android.content.Intent
@@ -7,10 +7,10 @@ import androidx.core.content.FileProvider
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonWriter
-import com.irin.flowlog.BuildConfig
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventEntity
-import com.irin.flowlog.data.entity.EventType
+import com.linger.app.BuildConfig
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventEntity
+import com.linger.app.data.entity.EventType
 import java.io.File
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
@@ -38,7 +38,7 @@ class JsonExporter(private val db: AppDatabase) {
     suspend fun export(context: Context): File {
         val outFile = File(
             context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
-            "flowlog_export_${System.currentTimeMillis()}.json",
+            "linger_export_${System.currentTimeMillis()}.json",
         )
 
         // Stream the document straight to disk instead of materializing the whole export as one

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Configures what Android's accessibility framework delivers to FlowLogAccessibilityService.
+    Configures what Android's accessibility framework delivers to LingerAccessibilityService.
 
     accessibilityEventTypes: which event categories we receive.
       - typeWindowStateChanged: foreground app changed (used for session start/end detection)
@@ -10,9 +10,9 @@
       - typeNotificationStateChanged: a notification appeared (we log the package name only)
 
     packageNames: intentionally absent — we want notification events from ALL packages.
-      Instagram-only filtering for scroll/tap/etc. is done in code (see FlowLogAccessibilityService).
+      Instagram-only filtering for scroll/tap/etc. is done in code (see LingerAccessibilityService).
 
-    description: shown to the user in Settings → Accessibility → flowlog.
+    description: shown to the user in Settings → Accessibility → linger.
       Must honestly describe what the service does — see spec §6.
 
     canRetrieveWindowContent: true — needed to read class names from the view hierarchy

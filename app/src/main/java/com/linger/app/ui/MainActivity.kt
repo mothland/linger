@@ -1,4 +1,4 @@
-package com.irin.flowlog.ui
+package com.linger.app.ui
 
 import android.Manifest
 import android.content.Intent
@@ -23,15 +23,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.irin.flowlog.DevConfig
-import com.irin.flowlog.ServiceStats
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.export.CsvExporter
-import com.irin.flowlog.export.JsonExporter
-import com.irin.flowlog.report.EsmTrigger
-import com.irin.flowlog.dev.TestAction
-import com.irin.flowlog.dev.TestBus
-import com.irin.flowlog.dev.TestResult
+import com.linger.app.DevConfig
+import com.linger.app.ServiceStats
+import com.linger.app.data.AppDatabase
+import com.linger.app.export.CsvExporter
+import com.linger.app.export.JsonExporter
+import com.linger.app.report.EsmTrigger
+import com.linger.app.dev.TestAction
+import com.linger.app.dev.TestBus
+import com.linger.app.dev.TestResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first

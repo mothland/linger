@@ -1,7 +1,7 @@
-package com.irin.flowlog.export
+package com.linger.app.export
 
 import com.google.gson.Gson
-import com.irin.flowlog.data.entity.EventEntity
+import com.linger.app.data.entity.EventEntity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue

@@ -1,14 +1,14 @@
-package com.irin.flowlog
+package com.linger.app
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import androidx.core.app.NotificationCompat
-import com.irin.flowlog.R
+import com.linger.app.R
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-class FlowLogApplication : Application() {
+class LingerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -69,7 +69,7 @@ class FlowLogApplication : Application() {
     }
 
     companion object {
-        const val PREFS_NAME             = "flowlog_prefs"
+        const val PREFS_NAME             = "linger_prefs"
         const val KEY_SERVICE_RUNNING    = "service_running"
         const val KEY_LAST_HEARTBEAT_MS  = "last_heartbeat_ms"
         const val KEY_LAST_EVENT_MS      = "last_event_ms"

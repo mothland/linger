@@ -7,7 +7,7 @@
 
 Cette étude cherche à comprendre comment les comportements naturels lors de l'utilisation d'Instagram (façon de défiler, pauses, interactions) sont liés à l'état psychologique ressenti.
 
-Vous n'avez rien de particulier à faire : **utilisez Instagram normalement.** L'application FlowLog observe en arrière-plan et vous envoie deux courtes notifications environ toutes les 5 minutes pendant vos sessions :
+Vous n'avez rien de particulier à faire : **utilisez Instagram normalement.** L'application Linger observe en arrière-plan et vous envoie deux courtes notifications environ toutes les 5 minutes pendant vos sessions :
 
 1. « Comment s'est passée votre session ? » — *Plutôt bien / Bof / C'était nul*
 2. « Quelque chose a-t-il attiré votre attention ou suscité une réaction forte ? » — *Oui / Pas vraiment*
@@ -50,7 +50,7 @@ Vous pouvez à tout moment exercer vos droits d'accès, de rectification, d'effa
 
 ## Consentement
 
-La participation est **volontaire**. Vous pouvez arrêter à tout moment en désactivant FlowLog dans Paramètres → Accessibilité. Si vous souhaitez également que vos données brutes ne soient plus utilisées dans le cadre de l'étude, contactez le chercheur **avant novembre 2026** : votre fichier sera effacé. Une fois les données intégrées dans des résultats agrégés et anonymisés, leur suppression individuelle des résultats agrégés n'est plus possible (art. 17(3)(d) RGPD — exception recherche scientifique), mais aucune donnée vous identifiant ne subsistera dans les résultats. Il reste possible d'effacer le fichier individuel.
+La participation est **volontaire**. Vous pouvez arrêter à tout moment en désactivant Linger dans Paramètres → Accessibilité. Si vous souhaitez également que vos données brutes ne soient plus utilisées dans le cadre de l'étude, contactez le chercheur **avant novembre 2026** : votre fichier sera effacé. Une fois les données intégrées dans des résultats agrégés et anonymisés, leur suppression individuelle des résultats agrégés n'est plus possible (art. 17(3)(d) RGPD — exception recherche scientifique), mais aucune donnée vous identifiant ne subsistera dans les résultats. Il reste possible d'effacer le fichier individuel.
 
 Veuillez parapher chaque ligne, puis signer ci-dessous.
 

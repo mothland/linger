@@ -1,4 +1,4 @@
-package com.irin.flowlog.report
+package com.linger.app.report
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -6,11 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.irin.flowlog.FlowLogApplication
-import com.irin.flowlog.R
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventType
-import com.irin.flowlog.privacy.PrivacyLayer
+import com.linger.app.LingerApplication
+import com.linger.app.R
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventType
+import com.linger.app.privacy.PrivacyLayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,8 +35,8 @@ private const val UNDO_WINDOW_MS = 10_000L
 class EsmResponseReceiver : BroadcastReceiver() {
 
     companion object {
-        const val ACTION_ESM_RESPONSE   = "com.irin.flowlog.ACTION_ESM_RESPONSE"
-        const val ACTION_ESM_UNDO       = "com.irin.flowlog.ACTION_ESM_UNDO"
+        const val ACTION_ESM_RESPONSE   = "com.linger.app.ACTION_ESM_RESPONSE"
+        const val ACTION_ESM_UNDO       = "com.linger.app.ACTION_ESM_UNDO"
         const val EXTRA_RESPONSE        = "response"
         const val EXTRA_NOTIFICATION_ID = "notification_id"
 
@@ -103,7 +103,7 @@ class EsmResponseReceiver : BroadcastReceiver() {
                 )
                 nm.notify(
                     question.undoNotifId,
-                    NotificationCompat.Builder(context, FlowLogApplication.CHANNEL_SELF_REPORT)
+                    NotificationCompat.Builder(context, LingerApplication.CHANNEL_SELF_REPORT)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("Logged: $label")
                         .setContentText("Tap Undo to change your answer.")

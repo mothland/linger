@@ -1,16 +1,16 @@
-package com.irin.flowlog.service
+package com.linger.app.service
 
-import com.irin.flowlog.data.entity.EventType
-import com.irin.flowlog.privacy.PrivacyLayer
-import com.irin.flowlog.session.INSTAGRAM_PACKAGE
-import com.irin.flowlog.session.SessionManager
+import com.linger.app.data.entity.EventType
+import com.linger.app.privacy.PrivacyLayer
+import com.linger.app.session.INSTAGRAM_PACKAGE
+import com.linger.app.session.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
  * Translates raw accessibility events into structured writeEvent() calls.
- * Sits between FlowLogAccessibilityService (raw Android events) and PrivacyLayer (DB writes).
+ * Sits between LingerAccessibilityService (raw Android events) and PrivacyLayer (DB writes).
  * Never touches the DB directly.
  */
 class EventDispatcher(

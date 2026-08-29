@@ -1,7 +1,7 @@
-# Data Collection Audit — flowlog v1.0.0
+# Data Collection Audit — linger v1.0.0
 
 **Study:** Behavioral telemetry and flow state in social media use   
-**Instrument:** flowlog Android app (`com.irin.flowlog`)  
+**Instrument:** linger Android app (`com.linger.app`)  
 **Last updated:** 2026-05-21
 
 This document describes exactly what the app records, how it is stored, how it leaves the device, and what technical controls enforce the privacy boundaries. It is intended for ethics board review, participant information sheets, and researcher reference.
@@ -173,7 +173,7 @@ Notification events are captured via the Android accessibility framework's `TYPE
 
 ### 4.5 On-device storage only
 
-All data is written to a local SQLite database using Android Room (`com.irin.flowlog.data`). The database is stored in the app's private data directory, inaccessible to other apps without root.
+All data is written to a local SQLite database using Android Room (`com.linger.app.data`). The database is stored in the app's private data directory, inaccessible to other apps without root.
 
 ---
 
@@ -183,7 +183,7 @@ All data is written to a local SQLite database using Android Room (`com.irin.flo
 Instagram / Android system
         │
         ▼
-FlowLogAccessibilityService   ← raw AccessibilityEvents
+LingerAccessibilityService   ← raw AccessibilityEvents
         │
         ▼
 EventDispatcher               ← translates to structured calls
@@ -210,7 +210,7 @@ ESM events bypass `EventDispatcher` and go directly from `EsmTrigger` / `EsmResp
 
 Export is triggered manually by the participant tapping "Share JSON" or "View JSON" in the app. No automatic or background export occurs.
 
-The export is a single UTF-8 JSON file written to the app's external Documents directory (`Android/data/com.irin.flowlog/files/Documents/`). The filename includes a timestamp (`flowlog_export_<ms>.json`).
+The export is a single UTF-8 JSON file written to the app's external Documents directory (`Android/data/com.linger.app/files/Documents/`). The filename includes a timestamp (`linger_export_<ms>.json`).
 
 ### Export file structure
 
@@ -298,7 +298,7 @@ Each session is divided into **ESM epochs** — slices of behavioral events brac
 >
 > **Your data stays on your phone** until you choose to share the export file with the researcher. You can delete all recorded data at any time from the app's main screen. Uninstalling the app also removes the database.
 >
-> **Participation is voluntary.** You can stop at any time by disabling the FlowLog accessibility service in your phone's Settings → Accessibility.
+> **Participation is voluntary.** You can stop at any time by disabling the Linger accessibility service in your phone's Settings → Accessibility.
 
 ---
 
@@ -307,7 +307,7 @@ Each session is divided into **ESM epochs** — slices of behavioral events brac
 1. **Screen context inference** — the app infers whether the user is in Feed, Reels, Stories, etc. primarily from `viewIdResourceName` (Instagram-specific view IDs), falling back to class name and event text. Best-effort; may misclassify if Instagram renames internal IDs across updates. No content is captured in the process.
 2. **Notification interrupts** — only a boolean is recorded per notification (`fromInstagram: true/false`). No sender identity is stored. This is sufficient to measure interrupt frequency and whether the interrupt came from Instagram itself, without revealing any other app the participant uses.
 3. **ESM non-response** — a `SELF_REPORT_SHOWN` with no corresponding `SELF_REPORT_SUBMITTED` is itself a data point. Participants should be aware that ignoring a prompt is recorded.
-4. **Accessibility service visibility** — Android displays FlowLog in the system Accessibility settings. Other people with access to the participant's phone can see it is installed.
+4. **Accessibility service visibility** — Android displays Linger in the system Accessibility settings. Other people with access to the participant's phone can see it is installed.
 5. **Reels repost locale limitation** — `repost_tapped` is detected via content description matching and only confirmed for English ("Repost") and French ("Republier"). Other locales will silently miss this event. Feed repost (`reposted`/`unreposted`) uses `isSelected` and is unaffected.
 6. **Feed post dwell** — use `post_view_id` to group events on the same post, then compute dwell as `MAX(timestamp_mono) − MIN(timestamp_mono)` across that group. `PAUSE` events with `screenContext = "feed"` contribute to this span. The ID is assigned based on which post View is physically centered on screen (nearest center-Y), so partial wiggles and brief hesitations do not generate spurious new IDs.
 7. **Stories produce no detectable accessibility events** — empirically confirmed: full logcat produced zero events of any kind (no tap, scroll, window-state, or content-changed) during story navigation. Story time therefore appears in the data as a `PAUSE` event with `screenContext=feed` and an elevated `durationMs`, indistinguishable from a long feed pause at the instrument level. The root cause was not investigated. Further work could attempt to identify a detection mechanism; for now this is a known gap. For analysis: anomalously long PAUSEs (e.g. >30 s) within an active session may indicate story viewing time and can be flagged or excluded.

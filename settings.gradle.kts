@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "flowlog"
+rootProject.name = "linger"
 include(":app")

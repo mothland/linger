@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace  = "com.irin.flowlog"
+    namespace  = "com.linger.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId   = "com.irin.flowlog"
+        applicationId   = "com.linger.app"
         minSdk          = 28     // Android 8.1 — getScrollDeltaX/Y require API 28
         targetSdk       = 35
         versionCode     = 14

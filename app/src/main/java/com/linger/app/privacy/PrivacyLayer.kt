@@ -1,16 +1,16 @@
-package com.irin.flowlog.privacy
+package com.linger.app.privacy
 
 import android.util.Log
 import com.google.gson.Gson
-import com.irin.flowlog.ServiceStats
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventEntity
-import com.irin.flowlog.data.entity.EventType
+import com.linger.app.ServiceStats
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventEntity
+import com.linger.app.data.entity.EventType
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-private const val TAG = "FlowLog"
+private const val TAG = "Linger"
 
 /**
  * The single write chokepoint for all event data. No other module may write to the DB directly.

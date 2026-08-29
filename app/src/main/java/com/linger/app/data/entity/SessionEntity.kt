@@ -1,4 +1,4 @@
-package com.irin.flowlog.data.entity
+package com.linger.app.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

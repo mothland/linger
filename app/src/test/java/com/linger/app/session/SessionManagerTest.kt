@@ -1,8 +1,8 @@
-package com.irin.flowlog.session
+package com.linger.app.session
 
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.SessionEntity
-import com.irin.flowlog.privacy.PrivacyLayer
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.SessionEntity
+import com.linger.app.privacy.PrivacyLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -47,7 +47,7 @@ class SessionManagerTest {
         privacy = mock()
         sessionEndedCount = 0
 
-        val mockSessionDao = mock<com.irin.flowlog.data.dao.SessionDao>()
+        val mockSessionDao = mock<com.linger.app.data.dao.SessionDao>()
         whenever(db.sessionDao()).thenReturn(mockSessionDao)
         runBlocking {
             whenever(mockSessionDao.getSessionById(any())).thenReturn(

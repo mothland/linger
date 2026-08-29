@@ -31,16 +31,16 @@
     <!-- Android 14+ (API 34) requires a typed foreground service permission matching the declared type. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
-    <!-- Allows prompting the user to exempt FlowLog from battery optimization. -->
+    <!-- Allows prompting the user to exempt Linger from battery optimization. -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- Android 13+ requires explicit permission to post notifications (e.g. the post-session prompt). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".FlowLogApplication"
+        android:name=".LingerApplication"
         android:label="@string/app_name"
-        android:theme="@style/Theme.FlowLog"
+        android:theme="@style/Theme.Linger"
         android:allowBackup="false">
 
         <!-- Main screen: logging status, export, delete. -->
@@ -60,7 +60,7 @@
             The meta-data points to our XML config file shown in Settings → Accessibility.
         -->
         <service
-            android:name=".service.FlowLogAccessibilityService"
+            android:name=".service.LingerAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:foregroundServiceType="dataSync"
             android:exported="true">
@@ -80,8 +80,8 @@
             android:name=".report.EsmResponseReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.irin.flowlog.ACTION_ESM_RESPONSE" />
-                <action android:name="com.irin.flowlog.ACTION_ESM_UNDO" />
+                <action android:name="com.linger.app.ACTION_ESM_RESPONSE" />
+                <action android:name="com.linger.app.ACTION_ESM_UNDO" />
             </intent-filter>
         </receiver>
 

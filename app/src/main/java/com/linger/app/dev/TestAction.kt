@@ -1,4 +1,4 @@
-package com.irin.flowlog.dev
+package com.linger.app.dev
 
 sealed class TestAction(val label: String) {
     object DoubleTapCenter    : TestAction("Double-tap center")

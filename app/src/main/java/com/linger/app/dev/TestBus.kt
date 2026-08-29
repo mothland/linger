@@ -1,4 +1,4 @@
-package com.irin.flowlog.dev
+package com.linger.app.dev
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

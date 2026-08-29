@@ -117,7 +117,7 @@ Screen turned on or off. `SCREEN_OFF` is recorded only when it terminates an act
 ---
 
 ### `NOTIFICATION_RECEIVED`
-A notification was posted by any app during an active Instagram session. Notifications received outside a session are dropped entirely. No content, title, body, or sender identity is recorded. Notifications from the recording app itself (`com.irin.flowlog`) are excluded.
+A notification was posted by any app during an active Instagram session. Notifications received outside a session are dropped entirely. No content, title, body, or sender identity is recorded. Notifications from the recording app itself (`com.linger.app`) are excluded.
 
 `session_id` is set to the active session (non-null).
 

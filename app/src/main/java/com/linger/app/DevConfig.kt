@@ -1,4 +1,4 @@
-package com.irin.flowlog
+package com.linger.app
 
 /**
  * Toggle dev-only features. Defaults to true on debug builds, false on release.

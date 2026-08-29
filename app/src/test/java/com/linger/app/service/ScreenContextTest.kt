@@ -1,4 +1,4 @@
-package com.irin.flowlog.service
+package com.linger.app.service
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

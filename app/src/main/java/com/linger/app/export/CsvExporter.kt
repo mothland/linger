@@ -1,11 +1,11 @@
-package com.irin.flowlog.export
+package com.linger.app.export
 
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
 import androidx.core.content.FileProvider
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventType
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventType
 import java.io.BufferedWriter
 import java.io.File
 import java.io.OutputStreamWriter
@@ -35,7 +35,7 @@ class CsvExporter(private val db: AppDatabase) {
     suspend fun export(context: Context): File {
         val outFile = File(
             context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
-            "flowlog_export_${System.currentTimeMillis()}.csv",
+            "linger_export_${System.currentTimeMillis()}.csv",
         )
         val deviceId = deviceIdHash(context)
 

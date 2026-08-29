@@ -1,12 +1,12 @@
-package com.irin.flowlog.export
+package com.linger.app.export
 
 import android.content.Context
 import android.provider.Settings
 import com.google.gson.GsonBuilder
 import com.google.gson.ToNumberPolicy
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventEntity
-import com.irin.flowlog.data.entity.EventType
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventEntity
+import com.linger.app.data.entity.EventType
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -29,7 +29,7 @@ internal fun deviceIdHash(context: Context): String {
 }
 
 private fun getOrCreateInstallUuid(context: Context): String {
-    val prefs = context.getSharedPreferences("flowlog_prefs", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences("linger_prefs", Context.MODE_PRIVATE)
     return prefs.getString("install_uuid", null) ?: UUID.randomUUID().toString().also {
         prefs.edit().putString("install_uuid", it).apply()
     }

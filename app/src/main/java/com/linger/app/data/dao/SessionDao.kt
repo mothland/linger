@@ -1,7 +1,7 @@
-package com.irin.flowlog.data.dao
+package com.linger.app.data.dao
 
 import androidx.room.*
-import com.irin.flowlog.data.entity.SessionEntity
+import com.linger.app.data.entity.SessionEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

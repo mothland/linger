@@ -1,17 +1,17 @@
-package com.irin.flowlog.report
+package com.linger.app.report
 
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.irin.flowlog.FlowLogApplication
-import com.irin.flowlog.R
-import com.irin.flowlog.ServiceStats
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventType
-import com.irin.flowlog.privacy.PrivacyLayer
-import com.irin.flowlog.session.SessionManager
+import com.linger.app.LingerApplication
+import com.linger.app.R
+import com.linger.app.ServiceStats
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventType
+import com.linger.app.privacy.PrivacyLayer
+import com.linger.app.session.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -123,7 +123,7 @@ class EsmTrigger(
                 )
             }
 
-            val builder = NotificationCompat.Builder(context, FlowLogApplication.CHANNEL_SELF_REPORT)
+            val builder = NotificationCompat.Builder(context, LingerApplication.CHANNEL_SELF_REPORT)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(question.questionText)
                 .setAutoCancel(true)

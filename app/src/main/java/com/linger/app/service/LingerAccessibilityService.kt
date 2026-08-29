@@ -1,4 +1,4 @@
-package com.irin.flowlog.service
+package com.linger.app.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
@@ -20,18 +20,18 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.irin.flowlog.DevConfig
-import com.irin.flowlog.FlowLogApplication
-import com.irin.flowlog.dev.TestAction
-import com.irin.flowlog.dev.TestBus
-import com.irin.flowlog.dev.TestResult
-import com.irin.flowlog.R
-import com.irin.flowlog.ServiceStats
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.privacy.PrivacyLayer
-import com.irin.flowlog.report.EsmTrigger
-import com.irin.flowlog.session.INSTAGRAM_PACKAGE
-import com.irin.flowlog.session.SessionManager
+import com.linger.app.DevConfig
+import com.linger.app.LingerApplication
+import com.linger.app.dev.TestAction
+import com.linger.app.dev.TestBus
+import com.linger.app.dev.TestResult
+import com.linger.app.R
+import com.linger.app.ServiceStats
+import com.linger.app.data.AppDatabase
+import com.linger.app.privacy.PrivacyLayer
+import com.linger.app.report.EsmTrigger
+import com.linger.app.session.INSTAGRAM_PACKAGE
+import com.linger.app.session.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,15 +43,15 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.UUID
 
-private const val TAG        = "FlowLog"
-private const val TAG_TEST   = "FlowLog_Test"
-private const val TAG_TAP    = "FlowLog_Tap"
-private const val TAG_SCROLL = "FlowLog_Scroll"
+private const val TAG        = "Linger"
+private const val TAG_TEST   = "Linger_Test"
+private const val TAG_TAP    = "Linger_Tap"
+private const val TAG_SCROLL = "Linger_Scroll"
 private const val HEARTBEAT_INTERVAL_MS = 30_000L
 private const val PAUSE_THRESHOLD_MS = 1_500L
 private const val REELS_PAGER_ID    = "com.instagram.android:id/clips_viewer_view_pager"
 
-class FlowLogAccessibilityService : AccessibilityService() {
+class LingerAccessibilityService : AccessibilityService() {
 
     private lateinit var db: AppDatabase
     private lateinit var sessionManager: SessionManager
@@ -131,18 +131,18 @@ class FlowLogAccessibilityService : AccessibilityService() {
         // ── Foreground notification ───────────────────────────────────────────
         val initialNotif = buildForegroundNotification()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(FlowLogApplication.NOTIF_FOREGROUND, initialNotif, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+            startForeground(LingerApplication.NOTIF_FOREGROUND, initialNotif, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
-            startForeground(FlowLogApplication.NOTIF_FOREGROUND, initialNotif)
+            startForeground(LingerApplication.NOTIF_FOREGROUND, initialNotif)
         }
 
         // ── Shared state ──────────────────────────────────────────────────────
         ServiceStats.isRunning.value = true
 
-        val prefs = getSharedPreferences(FlowLogApplication.PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences(LingerApplication.PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit()
-            .putBoolean(FlowLogApplication.KEY_SERVICE_RUNNING, true)
-            .putLong(FlowLogApplication.KEY_LAST_HEARTBEAT_MS, System.currentTimeMillis())
+            .putBoolean(LingerApplication.KEY_SERVICE_RUNNING, true)
+            .putLong(LingerApplication.KEY_LAST_HEARTBEAT_MS, System.currentTimeMillis())
             .apply()
 
         // ── Broadcast receivers ───────────────────────────────────────────────
@@ -238,8 +238,8 @@ class FlowLogAccessibilityService : AccessibilityService() {
         super.onDestroy()
 
         ServiceStats.isRunning.value = false
-        getSharedPreferences(FlowLogApplication.PREFS_NAME, Context.MODE_PRIVATE)
-            .edit().putBoolean(FlowLogApplication.KEY_SERVICE_RUNNING, false).apply()
+        getSharedPreferences(LingerApplication.PREFS_NAME, Context.MODE_PRIVATE)
+            .edit().putBoolean(LingerApplication.KEY_SERVICE_RUNNING, false).apply()
 
         job.cancel()
 
@@ -771,18 +771,18 @@ class FlowLogAccessibilityService : AccessibilityService() {
     // ── Background coroutines ─────────────────────────────────────────────────
 
     private suspend fun runHeartbeat() {
-        val prefs = getSharedPreferences(FlowLogApplication.PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences(LingerApplication.PREFS_NAME, Context.MODE_PRIVATE)
         while (true) {
             delay(HEARTBEAT_INTERVAL_MS)
             val now = System.currentTimeMillis()
             prefs.edit()
-                .putLong(FlowLogApplication.KEY_LAST_HEARTBEAT_MS, now)
+                .putLong(LingerApplication.KEY_LAST_HEARTBEAT_MS, now)
                 .apply()
-            // Mirror last event time to SharedPreferences so FlowLogApplication can read it
+            // Mirror last event time to SharedPreferences so LingerApplication can read it
             // on the next cold start for the crash notification.
             val lastMs = ServiceStats.lastEventAtMs.value
             if (lastMs > 0L) {
-                prefs.edit().putLong(FlowLogApplication.KEY_LAST_EVENT_MS, lastMs).apply()
+                prefs.edit().putLong(LingerApplication.KEY_LAST_EVENT_MS, lastMs).apply()
             }
         }
     }
@@ -790,7 +790,7 @@ class FlowLogAccessibilityService : AccessibilityService() {
     // ── Notification builder ──────────────────────────────────────────────────
 
     private fun buildForegroundNotification(): Notification {
-        return NotificationCompat.Builder(this, FlowLogApplication.CHANNEL_SERVICE_STATUS)
+        return NotificationCompat.Builder(this, LingerApplication.CHANNEL_SERVICE_STATUS)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Linger")
             .setOngoing(true)

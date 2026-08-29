@@ -1,6 +1,6 @@
-package com.irin.flowlog.privacy
+package com.linger.app.privacy
 
-import com.irin.flowlog.data.entity.EventType
+import com.linger.app.data.entity.EventType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

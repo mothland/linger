@@ -1,16 +1,16 @@
-package com.irin.flowlog
+package com.linger.app
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventType
-import com.irin.flowlog.data.entity.SessionEntity
-import com.irin.flowlog.export.JsonExporter
-import com.irin.flowlog.privacy.PrivacyLayer
-import com.irin.flowlog.report.SelfReportTrigger
-import com.irin.flowlog.session.SessionManager
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventType
+import com.linger.app.data.entity.SessionEntity
+import com.linger.app.export.JsonExporter
+import com.linger.app.privacy.PrivacyLayer
+import com.linger.app.report.SelfReportTrigger
+import com.linger.app.session.SessionManager
 import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -101,7 +101,7 @@ class AccessibilityEventReplayTest {
 
         // ── Phase 3: Session ends after threshold ──────────────────────────────
         sessionManager.onInstagramBackground()
-        advanceTimeBy(com.irin.flowlog.session.SESSION_END_THRESHOLD_MS + 1_000)
+        advanceTimeBy(com.linger.app.session.SESSION_END_THRESHOLD_MS + 1_000)
 
         assertNull("Session should be ended after threshold", sessionManager.activeSessionId)
         assertEquals("Trigger should have fired once", 1, triggeredSessions.size)

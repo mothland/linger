@@ -1,4 +1,4 @@
-package com.irin.flowlog.data.entity
+package com.linger.app.data.entity
 
 // Canonical set of event types. Stored as the enum name (string) in the DB and JSON export.
 // See spec §3.2 for definitions of each type.

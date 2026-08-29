@@ -1,10 +1,10 @@
-package com.irin.flowlog.session
+package com.linger.app.session
 
 import android.util.Log
-import com.irin.flowlog.data.AppDatabase
-import com.irin.flowlog.data.entity.EventType
-import com.irin.flowlog.data.entity.SessionEntity
-import com.irin.flowlog.privacy.PrivacyLayer
+import com.linger.app.data.AppDatabase
+import com.linger.app.data.entity.EventType
+import com.linger.app.data.entity.SessionEntity
+import com.linger.app.privacy.PrivacyLayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,7 +15,7 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-private const val TAG = "FlowLog"
+private const val TAG = "Linger"
 
 const val INSTAGRAM_PACKAGE = "com.instagram.android"
 

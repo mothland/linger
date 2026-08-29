@@ -34,7 +34,7 @@ All code changes are logged here. Bump `versionName` in `app/build.gradle.kts` w
 - DATA_AUDIT §10.7 corrected: previous text said "SCROLL and TAP may fire incidentally" in stories — confirmed false. Full logcat produced zero events of any kind during story navigation. Story time appears as a `PAUSE` with `screenContext=feed` and elevated `durationMs`; root cause not investigated. See D19.
 
 ### Decisions
-- D18 added: DM context rules (`direct_tab`, `inbox`) must appear before the general `"direct_"` → `"share"` rule in `inferContextFromViewId`. Further DM rule additions require confirmed view IDs from `FlowLog_Tap` — generic substrings risk false matches against share-sheet recipient rows.
+- D18 added: DM context rules (`direct_tab`, `inbox`) must appear before the general `"direct_"` → `"share"` rule in `inferContextFromViewId`. Further DM rule additions require confirmed view IDs from `Linger_Tap` — generic substrings risk false matches against share-sheet recipient rows.
 - D19 added: story time is undetectable at the instrument level — no accessibility event of any kind fires during story viewing. No workaround exists.
 
 ---
@@ -86,7 +86,7 @@ First stable release. Study-ready. No functional changes from 0.9.1 — this bum
 ## [0.7.0] — 2026-05-20
 
 ### Added
-- `TAG_SCROLL = "FlowLog_Scroll"` — dev-mode Logcat tag on every Instagram scroll event with `viewId`, `fromIndex`, direction, context, and delta
+- `TAG_SCROLL = "Linger_Scroll"` — dev-mode Logcat tag on every Instagram scroll event with `viewId`, `fromIndex`, direction, context, and delta
 - `screenContext` field on `PAUSE` events — captures the screen context the user was in *during* the inactivity gap (same values as SCROLL/TAP); `PAUSE` with `screenContext = "feed"` is the feed post dwell signal
 
 ### Changed
@@ -104,20 +104,20 @@ First stable release. Study-ready. No functional changes from 0.9.1 — this bum
 - `SessionManager.activeSessionId`, `sessionStartInstant`, and `endJob` were plain `var` accessed from both the main thread (accessibility callbacks) and IO coroutines; added `@Volatile` on all three so cross-thread writes are visible
 - Dev "Trigger ESM now" button wrote `SELF_REPORT_SHOWN` events with `sessionId = null` (instantiated a fresh `EsmTrigger` without a `SessionManager`), so the exporter's `getEventsForSession()` never found them → `periodIds` empty → all epochs had `esmPeriodId = null` and both responses null
 - `APP_SWITCH` events and session countdown fired when the Samsung keyboard (and any IME) appeared over Instagram — treated as a genuine app navigation when it is not
-- `NOTIFICATION_RECEIVED` from `com.irin.flowlog` itself appeared in exports — the service's own foreground notification was being recorded
+- `NOTIFICATION_RECEIVED` from `com.linger.app` itself appeared in exports — the service's own foreground notification was being recorded
 
 ### Added
 - `SessionDao.getSessionById(sessionId: String)` — used by `finalizeSession` to close the exact right row
-- `ServiceStats.activeSessionId: MutableStateFlow<String?>(null)` — set in `FlowLogAccessibilityService.handleWindowChange()` on session foreground, cleared in the `onSessionFinalized` callback; bridges the dev-button's detached `EsmTrigger` to the live session
+- `ServiceStats.activeSessionId: MutableStateFlow<String?>(null)` — set in `LingerAccessibilityService.handleWindowChange()` on session foreground, cleared in the `onSessionFinalized` callback; bridges the dev-button's detached `EsmTrigger` to the live session
 - `ScreenContextTest` — 13 JVM unit tests for `inferContextFromViewId`; `inferContextFromViewId` extracted as `internal` top-level function so tests don't need Android
-- `TAG_TAP = "FlowLog_Tap"` — dev-mode Logcat tag that fires on every `TYPE_VIEW_CLICKED` with full node dump: desc, viewId, class, selected, clickable, own children, parent + siblings, grandparent
+- `TAG_TAP = "Linger_Tap"` — dev-mode Logcat tag that fires on every `TYPE_VIEW_CLICKED` with full node dump: desc, viewId, class, selected, clickable, own children, parent + siblings, grandparent
 
 ### Changed
 - `EsmTrigger.fireNotifications()` resolves `sessionId` as `sessionManager?.activeSessionId ?: ServiceStats.activeSessionId.value` — the live service path is unchanged; the dev button now also picks up the real session ID
 - `inferScreenContext` view-ID rules: added `"save_button" in viewId -> "reels"` (covers `com.instagram.android:id/save_button`, the Reels save button)
 - `scanForPostInteractions` detects feed repost/unrepost via `scanToggleButton` on `com.instagram.android:id/reposts_ufi_icon` (`isSelected` flip, bidirectional)
-- `scanForPostInteractions` detects Reels save/unsave via `scanToggleButton` on `com.instagram.android:id/save_button` (`isSelected` flip, confirmed via `FlowLog_Tap`)
-- `handleTap` detects Reels repost via content description match (`"repost"` / `"republier"`, case-insensitive); fires `repost_tapped` — direction not detectable, locale-limited to English and French (see D15) — confirmed via `FlowLog_Tap` parent dump; fires `reposted`/`unreposted` on `isSelected` flip
+- `scanForPostInteractions` detects Reels save/unsave via `scanToggleButton` on `com.instagram.android:id/save_button` (`isSelected` flip, confirmed via `Linger_Tap`)
+- `handleTap` detects Reels repost via content description match (`"repost"` / `"republier"`, case-insensitive); fires `repost_tapped` — direction not detectable, locale-limited to English and French (see D15) — confirmed via `Linger_Tap` parent dump; fires `reposted`/`unreposted` on `isSelected` flip
 - `handleTap` detects the feed share button (`android.view.ViewGroup`, no viewId, no contentDescription) via `findFeedShareButton()` structural bounds check (±40px tolerance); fires `POST_INTERACTION action=share_tapped`; also emits `TestBus.postInteractionSignal` so the existing "Tap feed share button" dev test now passes
 - `screenContext` inference uses `viewIdResourceName` as primary signal, class/text as fallback. View-ID rules: `clips_viewer` / `like_button` → `"reels"`; `row_feed` → `"feed"`; `comment` / `sticky_header` → `"comments"`; `direct_` / `share` → `"share"`; `story` → `"story"`; `profile` → `"profile"`. The hardcoded `REELS_PAGER_ID` special-case in `handleScroll` is removed — covered by the general rule
 - `APP_SWITCH` fires only when the incoming window is not an IME, system UI, or accessibility overlay — detected via `windows.any { it.type == TYPE_INPUT_METHOD || TYPE_SYSTEM || TYPE_ACCESSIBILITY_OVERLAY }`; covers keyboards, nav/status bar adjustments, and accessibility overlays
@@ -140,7 +140,7 @@ First stable release. Study-ready. No functional changes from 0.9.1 — this bum
   - `TestAction` sealed class with `DoubleTapCenter`, `TapFeedSaveButton`, `TapFeedShareButton`; `TestAction.all` list drives the dropdown automatically
   - `TestBus` singleton (`triggerAction`, `postInteractionSignal`, `testResult` flows) decouples MainActivity from the service
   - Dropdown + countdown + PASS/FAIL result UI in MainActivity; dropdown locked during non-Idle states
-  - `collectTestActions()` loop in `FlowLogAccessibilityService` runs test actions and reports results via `TestBus`
+  - `collectTestActions()` loop in `LingerAccessibilityService` runs test actions and reports results via `TestBus`
   - `android:canPerformGestures="true"` added to `accessibility_service_config.xml`
 
 ### Changed
@@ -185,7 +185,7 @@ First stable release. Study-ready. No functional changes from 0.9.1 — this bum
 ### Added
 - `POST_LIKED` event type — fires when a post/reel transitions from unliked → liked
 - Like detection via `isSelected` state-flip on view IDs `row_feed_button_like` (feed) and `like_button` (Reels), per Gemini spec
-- State tracker (`likeStateTracker`) in `FlowLogAccessibilityService` — in-memory only, prevents duplicate `POST_LIKED` events; author string used as dedup key but never written to DB
+- State tracker (`likeStateTracker`) in `LingerAccessibilityService` — in-memory only, prevents duplicate `POST_LIKED` events; author string used as dedup key but never written to DB
 - 200ms debounce on `TYPE_WINDOW_CONTENT_CHANGED` (`likeCheckJob`) — avoids firing on every frame during video playback
 - `mainScope` (Dispatchers.Main) for `rootInActiveWindow` scans
 - `recycleNode()` helper — consolidates the API < 33 recycle boilerplate

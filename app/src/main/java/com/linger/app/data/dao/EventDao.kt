@@ -1,7 +1,7 @@
-package com.irin.flowlog.data.dao
+package com.linger.app.data.dao
 
 import androidx.room.*
-import com.irin.flowlog.data.entity.EventEntity
+import com.linger.app.data.entity.EventEntity
 import kotlinx.coroutines.flow.Flow
 
 // DAO = Data Access Object. Room generates the SQL implementation of these methods at compile time.

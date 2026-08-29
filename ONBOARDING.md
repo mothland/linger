@@ -1,9 +1,9 @@
-# Onboarding — flowlog / Linger
+# Onboarding — Linger
 
 **Current version: 1.0.2** (see CHANGELOG.md)  
 **Purpose:** Passive behavioral telemetry logger for Instagram. Records interaction events + post-session self-reports to study flow state and Reward Prediction Error. Observes only — never nudges or modifies the user experience.
 
-> **Name note:** The app is called **Linger** on-device (home screen, Accessibility settings). The internal codename is **flowlog**, used throughout the codebase — package ID (`com.irin.flowlog`), class names, logcat tags, and these docs. Don't rename the code; just be aware the two names refer to the same thing.
+> **Name note:** The app is called **Linger**, both on-device (home screen, Accessibility settings) and throughout the codebase — package ID (`com.linger.app`), class names, logcat tags, and these docs.
 
 ---
 
@@ -19,13 +19,13 @@
 ## Project layout
 
 ```
-app/src/main/java/com/irin/flowlog/
+app/src/main/java/com/linger/app/
 ├── data/
 │   ├── entity/         EventEntity.kt, SessionEntity.kt, EventType.kt
 │   ├── dao/            EventDao.kt, SessionDao.kt
 │   └── AppDatabase.kt
 ├── service/
-│   ├── FlowLogAccessibilityService.kt   ← main event capture + like/save/share/dwell detection
+│   ├── LingerAccessibilityService.kt   ← main event capture + like/save/share/dwell detection
 │   └── EventDispatcher.kt              ← translates raw events → PrivacyLayer calls
 ├── session/
 │   └── SessionManager.kt               ← session start/end state machine
@@ -88,7 +88,7 @@ Both feed and reels button IDs are scanned for every action — whichever Instag
 | `share_sent` | Tap on `direct_send_button_multi_select` |
 | `comment_section_opened` | `bottom_sheet_container` present without `direct_share_sheet_grid_view_pog` child |
 
-All IDs are prefixed `com.instagram.android:id/`. If detection stops working, use `adb logcat -s FlowLog_Tap` — every `TYPE_VIEW_CLICKED` event logs the tapped node's viewId, class, contentDescription, isSelected, children, parent, siblings, and grandparent.
+All IDs are prefixed `com.instagram.android:id/`. If detection stops working, use `adb logcat -s Linger_Tap` — every `TYPE_VIEW_CLICKED` event logs the tapped node's viewId, class, contentDescription, isSelected, children, parent, siblings, and grandparent.
 
 ---
 
@@ -111,8 +111,8 @@ The `PrivacyLayer` is the enforcer. If you add a new event type, add its allowed
 | Location | Constant | Value | Purpose |
 |---|---|---|---|
 | `SessionManager.kt` | `SESSION_END_THRESHOLD_MS` | 30 000 ms | Gap before session ends |
-| `FlowLogAccessibilityService.kt` | `PAUSE_THRESHOLD_MS` | 1 500 ms | Inactivity before PAUSE fires |
-| `FlowLogAccessibilityService.kt` | `HEARTBEAT_INTERVAL_MS` | 30 000 ms | SharedPrefs heartbeat |
+| `LingerAccessibilityService.kt` | `PAUSE_THRESHOLD_MS` | 1 500 ms | Inactivity before PAUSE fires |
+| `LingerAccessibilityService.kt` | `HEARTBEAT_INTERVAL_MS` | 30 000 ms | SharedPrefs heartbeat |
 | `EsmTrigger.kt` | `ESM_INTERVAL_MS` | 5 × 60 × 1 000 ms | Time between ESM pings (only advances during active sessions) |
 
 ---
@@ -121,10 +121,10 @@ The `PrivacyLayer` is the enforcer. If you add a new event type, add its allowed
 
 | Tag | What it logs | When |
 |---|---|---|
-| `FlowLog` | All structured events, session lifecycle, dwell | always (while service is running) |
-| `FlowLog_Tap` | Full node dump on every `TYPE_VIEW_CLICKED`: viewId, class, desc, isSelected, children, parent, siblings, grandparent | dev mode only |
-| `FlowLog_Scroll` | viewId, fromIndex, direction, context, delta on every scroll | dev mode only |
-| `FlowLog_Test` | Dev test runner START/PASS/FAIL | dev mode only |
+| `Linger` | All structured events, session lifecycle, dwell | always (while service is running) |
+| `Linger_Tap` | Full node dump on every `TYPE_VIEW_CLICKED`: viewId, class, desc, isSelected, children, parent, siblings, grandparent | dev mode only |
+| `Linger_Scroll` | viewId, fromIndex, direction, context, delta on every scroll | dev mode only |
+| `Linger_Test` | Dev test runner START/PASS/FAIL | dev mode only |
 
 ---
 
@@ -132,12 +132,12 @@ The `PrivacyLayer` is the enforcer. If you add a new event type, add its allowed
 
 - `TYPE_WINDOW_CONTENT_CHANGED` fires on every video frame in Reels — any handler must debounce aggressively. SeekBar events (className `android.widget.SeekBar`) are filtered before the debounce to prevent the scrubber from resetting it constantly.
 - `post_view_id` seems to track which post is currently centered on screen. Feed: `trackFeedItem()` uses `event.source` (the feed RecyclerView node) to walk its children (~4-6), finds the child whose center Y is closest to screen center, and generates a new UUID when that child's `hashCode()` changes. Same View object = same post regardless of wiggles. Carousel swipes happen on a nested ViewPager2, so the outer feed child is unchanged → same hash → same ID. Reels: new UUID on `clips_viewer_view_pager` `fromIndex` change. Initial UUID seeded on foreground entry so immediate likes/saves before the first scroll are never null. `PAUSE` inherits the current ID — it does not generate a new one.
-- `screenContext` is inferred from `viewIdResourceName` first (Instagram-specific IDs are stable and unambiguous), falling back to class name and event text. The mapping lives in `inferContextFromViewId()` (top-level `internal` function, testable without Android). Horizontal scrolls with `"unknown"` context are overridden to `"carousel"`. If a context starts returning `"unknown"`, check `FlowLog_Scroll` or `FlowLog_Tap` to find the new view ID and add it to the mapping. **Order matters**: `"direct_tab"` and `"inbox"` map to `"dm"` and must appear before the general `"direct_"` → `"share"` rule, since those view IDs also start with `direct_`. Only add further DM rules when confirmed from `FlowLog_Tap` output — generic substrings like `"thread"` risk matching share-sheet recipient rows.
+- `screenContext` is inferred from `viewIdResourceName` first (Instagram-specific IDs are stable and unambiguous), falling back to class name and event text. The mapping lives in `inferContextFromViewId()` (top-level `internal` function, testable without Android). Horizontal scrolls with `"unknown"` context are overridden to `"carousel"`. If a context starts returning `"unknown"`, check `Linger_Scroll` or `Linger_Tap` to find the new view ID and add it to the mapping. **Order matters**: `"direct_tab"` and `"inbox"` map to `"dm"` and must appear before the general `"direct_"` → `"share"` rule, since those view IDs also start with `direct_`. Only add further DM rules when confirmed from `Linger_Tap` output — generic substrings like `"thread"` risk matching share-sheet recipient rows.
 - `APP_SWITCH` is suppressed when any window of type `TYPE_INPUT_METHOD`, `TYPE_SYSTEM`, or `TYPE_ACCESSIBILITY_OVERLAY` is visible — keyboards, nav bar adjustments, and accessibility overlays are not genuine app switches.
 - Feed post dwell: query all events sharing the same `post_view_id` with `screenContext = "feed"`. Dwell = `MAX(timestamp_mono) - MIN(timestamp_mono)`. The ID is set by which post View is centered on screen — `PAUSE` events contribute to the dwell span but do not start a new ID.
-- Instagram obfuscates its UI; view resource IDs may change across app versions. `FlowLog_Tap` is the primary debugging tool — filter it in Logcat and tap the button to see the current node hierarchy.
-- `AccessibilityNodeInfo.recycle()` is deprecated on API ≥ 33 but required on API < 33. Use `recycleNode()` in `FlowLogAccessibilityService` for all node recycling.
-- `rootInActiveWindow` must be called on the main thread — use `mainScope` (Dispatchers.Main) inside `FlowLogAccessibilityService`.
+- Instagram obfuscates its UI; view resource IDs may change across app versions. `Linger_Tap` is the primary debugging tool — filter it in Logcat and tap the button to see the current node hierarchy.
+- `AccessibilityNodeInfo.recycle()` is deprecated on API ≥ 33 but required on API < 33. Use `recycleNode()` in `LingerAccessibilityService` for all node recycling.
+- `rootInActiveWindow` must be called on the main thread — use `mainScope` (Dispatchers.Main) inside `LingerAccessibilityService`.
 - All DB reads/writes in `EventDispatcher` and `PrivacyLayer` use `scope` (Dispatchers.IO).
 - No network permissions in the manifest. Do not add any.
 - See DECISIONS.md for architectural choices that aren't obvious from the code.
