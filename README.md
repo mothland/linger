@@ -1,4 +1,4 @@
-# flowlog
+# Linger
 
 Android behavioral telemetry logger for MSc thesis research on flow states and social media engagement (ESILV Paris).
 
@@ -8,7 +8,7 @@ Android behavioral telemetry logger for MSc thesis research on flow states and s
 
 ## What it does
 
-flowlog runs silently in the background and **locally** records **anonymous** behavioral events (taps, scrolls, pauses, session timing, likes/saves/reposts/shares, Reel dwell) while you use Instagram. Every 5 minutes during an active Instagram session it sends two short ESM ping notifications asking how the scrolling felt. All data stays on your device; you export it manually as a JSON file.
+Linger runs silently in the background and **locally** records **anonymous** behavioral events (taps, scrolls, pauses, session timing, likes/saves/reposts/shares, Reel dwell) while you use Instagram. Every 5 minutes during an active Instagram session it sends two short ESM ping notifications asking how the scrolling felt. All data stays on your device; you export it manually as a JSON file.
 
 **What it records:** tap/scroll/pause/post-interaction events inside Instagram, session start/end times, Reel dwell time, screen on/off events when adjacent to a session, notification interrupt signals during sessions (no content, no sender identity).
 
@@ -34,15 +34,15 @@ Run → Run 'app'
 
 ### 2. Enable the Accessibility Service
 
-flowlog cannot log anything until you enable its Accessibility Service in system settings. Open flowlog, tap **"Open Accessibility Settings"**, find **flowlog** in the list, and toggle it on. Read the description that Android shows you — it accurately describes what the service does.
+Linger cannot log anything until you enable its Accessibility Service in system settings. Open Linger, tap **"Open Accessibility Settings"**, find **Linger** in the list, and toggle it on. Read the description that Android shows you — it accurately describes what the service does.
 
 ### 3. Enable Notification Access *(optional)*
 
 To log which apps send you notifications (package names only), grant notification access:
 
-Settings → Notifications → Notification access → flowlog → Allow
+Settings → Notifications → Notification access → Linger → Allow
 
-### 4. Allow notifications from flowlog
+### 4. Allow notifications from Linger
 
 On Android 13+, grant the POST_NOTIFICATIONS permission when the app prompts you. This is needed for the ESM ping notifications.
 
@@ -50,15 +50,9 @@ On Android 13+, grant the POST_NOTIFICATIONS permission when the app prompts you
 
 ## How to export data
 
-1. Open flowlog.
+1. Open Linger.
 2. Tap **"Share JSON"** to share the file via email, Google Drive, ADB pull, etc. — or tap **"View JSON"** to open it in a viewer app.
-
-The file is also written to:
-```
-Android/data/com.irin.flowlog/files/Documents/flowlog_export_<timestamp>.json
-```
-You can access it via USB in this folder without needing to use the share sheet.
-
+   
 ---
 
 ## Event types
@@ -98,7 +92,7 @@ You can access it via USB in this folder without needing to use the share sheet.
 ## Project structure
 
 ```
-app/src/main/java/com/irin/flowlog/
+app/src/main/java/com/user/Linger/
 ├── service/      AccessibilityService + EventDispatcher
 ├── data/         Room DB, DAOs, entities
 ├── session/      Session lifecycle state machine
