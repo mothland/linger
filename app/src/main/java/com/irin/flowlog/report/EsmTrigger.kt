@@ -15,6 +15,7 @@ import com.irin.flowlog.session.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -63,7 +64,10 @@ class EsmTrigger(
 
     fun onSessionStarted() = scheduleTimer()
 
-    fun onSessionEnded() = scheduleTimer()
+    fun onSessionEnded() {
+        scheduleTimer()
+        ServiceStats.esmNextFireAtMs.value = 0L
+    }
 
     suspend fun fireForTesting() = fireNotifications()
 
@@ -71,7 +75,9 @@ class EsmTrigger(
         timerJob?.cancel()
         timerJob = scope.launch {
             while (isActive) {
+                ServiceStats.esmNextFireAtMs.value = System.currentTimeMillis() + ESM_INTERVAL_MS
                 delay(ESM_INTERVAL_MS)
+                ServiceStats.esmNextFireAtMs.value = 0L
                 if (sessionManager?.activeSessionId != null) {
                     fireNotifications()
                 }

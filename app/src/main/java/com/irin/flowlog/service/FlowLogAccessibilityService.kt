@@ -265,10 +265,11 @@ class FlowLogAccessibilityService : AccessibilityService() {
             // Seed an initial post_view_id so events before the first scroll are still linked.
             if (currentPostViewId == null) currentPostViewId = UUID.randomUUID().toString()
         } else if (sessionManager.activeSessionId != null) {
-            // System overlays (IME, system UI, accessibility overlays) are not genuine app switches.
+            // IME and accessibility overlays appearing on top of Instagram are not genuine app switches.
+            // TYPE_SYSTEM is intentionally excluded — status bar / nav bar are always present and
+            // would make this guard always true, preventing onInstagramBackground() from ever firing.
             if (windows?.any {
                     it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD         ||
-                    it.type == AccessibilityWindowInfo.TYPE_SYSTEM                ||
                     it.type == AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY
                 } == true) return
             Log.d(TAG, "Instagram backgrounded — switched to $pkg")

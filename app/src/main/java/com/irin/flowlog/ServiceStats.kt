@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * For cross-restart state (last event time, crash detection) use SharedPreferences.
  */
 object ServiceStats {
-    val isRunning       = MutableStateFlow(false)
-    val lastEventAtMs   = MutableStateFlow(0L)        // epoch ms; 0 = no events yet this process
-    val activeSessionId = MutableStateFlow<String?>(null)
+    val isRunning        = MutableStateFlow(false)
+    val lastEventAtMs    = MutableStateFlow(0L)        // epoch ms; 0 = no events yet this process
+    val activeSessionId  = MutableStateFlow<String?>(null)
+    val esmNextFireAtMs  = MutableStateFlow(0L)        // epoch ms when next ESM ping is due; 0 = not scheduled
 }

@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.irin.flowlog.DevConfig
 import com.irin.flowlog.ServiceStats
 import com.irin.flowlog.data.AppDatabase
+import com.irin.flowlog.export.CsvExporter
 import com.irin.flowlog.export.JsonExporter
 import com.irin.flowlog.report.EsmTrigger
 import com.irin.flowlog.dev.TestAction
@@ -45,24 +46,37 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val db       = AppDatabase.getInstance(applicationContext)
-        val exporter = JsonExporter(db)
+        val db          = AppDatabase.getInstance(applicationContext)
+        val jsonExporter = JsonExporter(db)
+        val csvExporter  = CsvExporter(db)
 
         setContent {
             MaterialTheme {
                 val scope = rememberCoroutineScope()
                 StatusScreen(
                     db = db,
-                    onShare = {
+                    onShareJson = {
                         scope.launch {
-                            val file = withContext(Dispatchers.IO) { exporter.export(applicationContext) }
-                            startActivity(Intent.createChooser(exporter.shareIntent(applicationContext, file), "Share export"))
+                            val file = withContext(Dispatchers.IO) { jsonExporter.export(applicationContext) }
+                            startActivity(Intent.createChooser(jsonExporter.shareIntent(applicationContext, file), "Share export"))
                         }
                     },
-                    onView = {
+                    onViewJson = {
                         scope.launch {
-                            val file = withContext(Dispatchers.IO) { exporter.export(applicationContext) }
-                            startActivity(exporter.viewIntent(applicationContext, file))
+                            val file = withContext(Dispatchers.IO) { jsonExporter.export(applicationContext) }
+                            startActivity(jsonExporter.viewIntent(applicationContext, file))
+                        }
+                    },
+                    onShareCsv = {
+                        scope.launch {
+                            val file = withContext(Dispatchers.IO) { csvExporter.export(applicationContext) }
+                            startActivity(Intent.createChooser(csvExporter.shareIntent(applicationContext, file), "Share export"))
+                        }
+                    },
+                    onViewCsv = {
+                        scope.launch {
+                            val file = withContext(Dispatchers.IO) { csvExporter.export(applicationContext) }
+                            startActivity(csvExporter.viewIntent(applicationContext, file))
                         }
                     },
                     onDeleteAll = {
@@ -90,8 +104,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun StatusScreen(
     db: AppDatabase,
-    onShare: () -> Unit,
-    onView: () -> Unit,
+    onShareJson: () -> Unit,
+    onViewJson: () -> Unit,
+    onShareCsv: () -> Unit,
+    onViewCsv: () -> Unit,
     onDeleteAll: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
     onDisableBatteryOptimization: () -> Unit,
@@ -221,11 +237,17 @@ fun StatusScreen(
         Button(onClick = onOpenAccessibilitySettings, modifier = Modifier.fillMaxWidth()) {
             Text("Open Accessibility Settings")
         }
-        Button(onClick = onShare, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = onShareJson, modifier = Modifier.fillMaxWidth()) {
             Text("Share JSON")
         }
-        OutlinedButton(onClick = onView, modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(onClick = onViewJson, modifier = Modifier.fillMaxWidth()) {
             Text("View JSON")
+        }
+        Button(onClick = onShareCsv, modifier = Modifier.fillMaxWidth()) {
+            Text("Share CSV")
+        }
+        OutlinedButton(onClick = onViewCsv, modifier = Modifier.fillMaxWidth()) {
+            Text("View CSV")
         }
         OutlinedButton(
             onClick  = { showDeleteConfirm = true },
@@ -238,6 +260,10 @@ fun StatusScreen(
         if (DevConfig.enabled) {
             HorizontalDivider()
             Text("Dev", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.tertiary)
+
+            val activeSessionId by ServiceStats.activeSessionId.collectAsStateWithLifecycle()
+            val sessionLabel = if (activeSessionId != null) "Session: active (${activeSessionId!!.take(8)}…)" else "Session: none"
+            Text(sessionLabel, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
             Button(
                 onClick  = { scope.launch(Dispatchers.IO) { EsmTrigger(context, AppDatabase.getInstance(context)).fireForTesting() } },
                 modifier = Modifier.fillMaxWidth(),
@@ -245,6 +271,24 @@ fun StatusScreen(
             ) {
                 Text("Trigger ESM now")
             }
+
+            val esmNextFireAtMs by ServiceStats.esmNextFireAtMs.collectAsStateWithLifecycle()
+            var nowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+            LaunchedEffect(esmNextFireAtMs) {
+                while (esmNextFireAtMs > 0L) {
+                    nowMs = System.currentTimeMillis()
+                    delay(1_000L)
+                }
+            }
+            val esmLabel = if (esmNextFireAtMs == 0L) {
+                "ESM timer: not running"
+            } else {
+                val secsLeft = ((esmNextFireAtMs - nowMs) / 1_000L).coerceAtLeast(0L)
+                val m = secsLeft / 60
+                val s = secsLeft % 60
+                "ESM timer: ${m}m ${s}s"
+            }
+            Text(esmLabel, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
 
             // ── Test runner ───────────────────────────────────────────────────
             var selectedAction   by remember { mutableStateOf(TestAction.all.first()) }
