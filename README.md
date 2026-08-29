@@ -1,6 +1,6 @@
 # Linger
 
-Android behavioral telemetry logger for MSc thesis research on flow states and social media engagement (ESILV Paris).
+Android behavioral telemetry logger for MSc thesis research on reward satiation and social media engagement (ESILV Paris).
 
 **Target:** Instagram on Android 8.1+
 
@@ -8,7 +8,7 @@ Android behavioral telemetry logger for MSc thesis research on flow states and s
 
 ## What it does
 
-Linger runs silently in the background and **locally** records **anonymous** behavioral events (taps, scrolls, pauses, session timing, likes/saves/reposts/shares, Reel dwell) while you use Instagram. Every 5 minutes during an active Instagram session it sends two short ESM ping notifications asking how the scrolling felt. All data stays on your device; you export it manually as a JSON file.
+Linger runs silently in the background and **locally** records **anonymous** behavioral events (taps, scrolls, pauses, session timing, likes/saves/reposts/shares, Reel dwell) while you use Instagram. Every few minutes during an active Instagram session, it sends two short ESM ping notifications asking how the scrolling felt. All data stays on your device; you export it manually as a JSON file.
 
 **What it records:** tap/scroll/pause/post-interaction events inside Instagram, session start/end times, Reel dwell time, screen on/off events when adjacent to a session, notification interrupt signals during sessions (no content, no sender identity).
 
@@ -36,7 +36,7 @@ Run → Run 'app'
 
 Linger cannot log anything until you enable its Accessibility Service in system settings. Open Linger, tap **"Open Accessibility Settings"**, find **Linger** in the list, and toggle it on. Read the description that Android shows you — it accurately describes what the service does.
 
-### 3. Enable Notification Access *(optional)*
+### 3. Enable Notification Access
 
 To log which apps send you notifications (package names only), grant notification access:
 
@@ -77,18 +77,6 @@ On Android 13+, grant the POST_NOTIFICATIONS permission when the app prompts you
 
 ---
 
-## Running tests
-
-```bash
-# Unit tests (JVM, fast — privacy redaction, session state machine, JSON serializer)
-./gradlew :app:test
-
-# Integration test (requires a connected device or emulator)
-./gradlew :app:connectedAndroidTest
-```
-
----
-
 ## Project structure
 
 ```
@@ -103,12 +91,10 @@ app/src/main/java/com/user/Linger/
 └── dev/          Dev-mode test runner (debug builds only)
 ```
 
-See `DECISIONS.md` for non-obvious design choices and open TODOs.
-
 ---
 
 ## Privacy notes
 
-- No internet permission is declared in the manifest. The app cannot make network requests.
+- No internet permission is declared in the manifest. The app cannot make network requests. There is no cloud database: everything is stored directly on your device.
 - The privacy layer (`PrivacyLayer.kt`) is the only path to the database. Every write goes through it. Every field not on the explicit whitelist is silently dropped before the write.
 - `DECISIONS.md` documents every non-obvious privacy decision.
