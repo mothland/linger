@@ -1,5 +1,7 @@
 # Onboarding — Linger
 
+> This document serves as a quick introduction to the project and its code.
+
 **Current version: 1.0.2** (see CHANGELOG.md)  
 **Purpose:** Passive behavioral telemetry logger for Instagram. Records interaction events + post-session self-reports to study flow state and Reward Prediction Error. Observes only — never nudges or modifies the user experience.
 
@@ -128,7 +130,7 @@ The `PrivacyLayer` is the enforcer. If you add a new event type, add its allowed
 
 ---
 
-## Things to know / gotchas
+## Things to know
 
 - `TYPE_WINDOW_CONTENT_CHANGED` fires on every video frame in Reels — any handler must debounce aggressively. SeekBar events (className `android.widget.SeekBar`) are filtered before the debounce to prevent the scrubber from resetting it constantly.
 - `post_view_id` seems to track which post is currently centered on screen. Feed: `trackFeedItem()` uses `event.source` (the feed RecyclerView node) to walk its children (~4-6), finds the child whose center Y is closest to screen center, and generates a new UUID when that child's `hashCode()` changes. Same View object = same post regardless of wiggles. Carousel swipes happen on a nested ViewPager2, so the outer feed child is unchanged → same hash → same ID. Reels: new UUID on `clips_viewer_view_pager` `fromIndex` change. Initial UUID seeded on foreground entry so immediate likes/saves before the first scroll are never null. `PAUSE` inherits the current ID — it does not generate a new one.
@@ -140,4 +142,3 @@ The `PrivacyLayer` is the enforcer. If you add a new event type, add its allowed
 - `rootInActiveWindow` must be called on the main thread — use `mainScope` (Dispatchers.Main) inside `LingerAccessibilityService`.
 - All DB reads/writes in `EventDispatcher` and `PrivacyLayer` use `scope` (Dispatchers.IO).
 - No network permissions in the manifest. Do not add any.
-- See DECISIONS.md for architectural choices that aren't obvious from the code.

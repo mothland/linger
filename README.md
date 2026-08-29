@@ -1,6 +1,8 @@
 # Linger
 
-Android behavioral telemetry logger for MSc thesis research on reward satiation and social media engagement (ESILV Paris).
+Android behavioral telemetry logger for MSc thesis research on reward satiation and social media engagement (ESILV Paris). 
+
+Since I lack Kotlin experience, this has been vibe coded in good part, and solo testing has been done and is still ongoing. Android accessibility events for instagram tend to be a bit finnicky and hard to catch (as well as poorly documented), so this was figured out through a lot of trial and error.
 
 **Target:** Instagram on Android 8.1+
 
@@ -97,4 +99,3 @@ app/src/main/java/com/user/Linger/
 
 - No internet permission is declared in the manifest. The app cannot make network requests. There is no cloud database: everything is stored directly on your device.
 - The privacy layer (`PrivacyLayer.kt`) is the only path to the database. Every write goes through it. Every field not on the explicit whitelist is silently dropped before the write.
-- `DECISIONS.md` documents every non-obvious privacy decision.
